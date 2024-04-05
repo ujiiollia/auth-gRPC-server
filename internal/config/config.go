@@ -9,14 +9,16 @@ import (
 )
 
 type Config struct {
-	Env         string `yaml: "env" env-default:"local"`
-	StoragePath string `yaml: "storage_path" env-reqared "true"`
-	HTTPServer  `yaml:http_server`
+	Env         string     `yaml:"env" env-default:"local"`
+	StoragePath string     `yaml:"storage_path" env-required:"true"`
+	GRPC        GRPCConfig `yaml:"grpc"`
+	//todo: MigrationsPath string
+	TokenTTL time.Duration `yaml:"token_ttl" env-default:"1h"`
 }
-type HTTPServer struct {
-	Address     string        `yaml: "adderss" env-defalt "0.0.0.0:8080"`
-	Timeout     time.Duration `yaml: "timeout" env-defalt "5s"`
-	IdleTimeout time.Duration `yaml: "idle_timeout" env-defalt "60s"`
+
+type GRPCConfig struct {
+	Port    int           `yaml:"port"`
+	Timeout time.Duration `yaml:"timeout"`
 }
 
 func MustLoad() *Config {
