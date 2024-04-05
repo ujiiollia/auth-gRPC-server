@@ -1,5 +1,6 @@
 env: "local"  
 storage_path: "./storage/users.db"  
+token_ttl: 1h
 grpc:  
-  port: 8080  
-  timeout: 50ms
+  port: 4455  
+  timeout: 5s

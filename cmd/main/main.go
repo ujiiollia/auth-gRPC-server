@@ -11,6 +11,10 @@ func main() {
 	cfg := config.MustLoad()
 	//инициализировать логгер
 	log := setupLogger(cfg.Env)
+	log.Info("start application",
+		slog.String("env", cfg.Env),
+		slog.Any("cfg", cfg),
+	)
 	//todo: инициализировать логику
 	//todo: запустить сервер
 }
