@@ -1,12 +1,16 @@
 package main
 
-import "app/internal/config"
+import (
+	"app/internal/config"
+	"log/slog"
+	"os"
+)
 
 func main() {
 	//инициализирован конфиг
 	cfg := config.MustLoad()
-	_ = cfg
-	//todo: инициализировать логгер
+	//инициализировать логгер
+	log := setupLogger(cfg.Env)
 	//todo: инициализировать логику
 	//todo: запустить сервер
 }
@@ -16,3 +20,24 @@ const (
 	envDev   = "dev"
 	envProd  = "prod"
 )
+
+func setupLogger(env string) *slog.Logger {
+	var log *slog.Logger
+
+	switch env {
+	case envLocal:
+		log = slog.New(
+			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+		)
+	case envDev:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+		)
+	case envProd:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
+		)
+	}
+
+	return log
+}
