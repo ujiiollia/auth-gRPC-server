@@ -1,9 +1,12 @@
 package main
 
 import (
+	"app/internal/app"
 	"app/internal/config"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -15,8 +18,20 @@ func main() {
 		slog.String("env", cfg.Env),
 		slog.Any("cfg", cfg),
 	)
-	//todo: инициализировать логику
-	//todo: запустить сервер
+	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
+
+	go func() {
+		application.GRPCServer.MustRun()
+	}()
+
+	// Graceful shutdown
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+	endSignal := <-stop
+	log.Info("stopping application", slog.String("signal", endSignal.String()))
+
+	application.GRPCServer.Stop()
+	log.Info("Gracefully stopped")
 }
 
 const (
